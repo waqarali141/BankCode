@@ -3,12 +3,15 @@ from scrapy import  Request
 import copy
 
 from AsposeCrawlers.items import SwiftCodeItem
+
 class SwiftCodes(Spider):
-    name = 'swiftcodes'
-    start_url = 'https://www.swiftcodes.info/'
-    custom_settings = {'DOWNLOAD_DELAY': 5,
+    name = 'theswiftcodes'
+    start_url = 'https://www.theswiftcodes.com/'
+    custom_settings = {'DOWNLOAD_DELAY': 10,
                        'CONCURRENT_REQUESTS': 30,
-                       'CONCURRENT_REQUESTS_PER_IP': 10}
+                       'CONCURRENT_REQUESTS_PER_IP': 10,
+                       'FEED_URI': 'swift.json'
+                       }
 
     def start_requests(self):
         yield Request(self.start_url, callback=self.parse_home_page)
@@ -18,10 +21,11 @@ class SwiftCodes(Spider):
         for link in alphabet_links:
             alphabet =  link.xpath('text()').extract()[0]
             url =  response.urljoin(link.xpath('@href').extract()[0])
+            if 'iban' in url:
+                continue
 
             meta = dict()
             meta['initial'] = alphabet
-            meta['dont_merge_cookies'] = True
             yield Request(url=url, callback=self.parse_country_page,
                           meta=meta)
 
@@ -32,7 +36,6 @@ class SwiftCodes(Spider):
             url =  response.urljoin(country.xpath('@href').extract()[0])
 
             meta = copy.deepcopy(response.meta)
-            meta['dont_merge_cookies'] = True
             meta['country'] = country_name
             yield Request(url=url, callback=self.parse_banks,
                           meta=meta)
@@ -45,7 +48,6 @@ class SwiftCodes(Spider):
 
             meta = copy.deepcopy(response.meta)
             meta['referer_url'] = response.url
-            meta['dont_merge_cookies'] = True
             yield Request(url=link, meta=meta,
                           callback=self.parse_swift_code)
 
@@ -55,7 +57,6 @@ class SwiftCodes(Spider):
             url = response.urljoin(next_page[0])
 
             meta = copy.deepcopy(response.meta)
-            meta['dont_merge_cookies'] = True
             yield Request(url=url, meta=meta, callback=self.parse_banks)
 
     def parse_swift_code(self, response):
@@ -65,7 +66,7 @@ class SwiftCodes(Spider):
         address = response.xpath('.//*[@id="swift"][1]//tr[5]//td[2]//text()').extract()
 
         item = SwiftCodeItem()
-        item['code'] = response.xpath('.//*[@id="swift"][1]//tr[2]//td[2]//text()').extract()[0].strip()
+        item['code'] = ''.join(response.xpath('.//*[@id="swift"][1]//tr[2]//td[2]//text()').extract()).strip()
         item['url'] = response.url
         item['referer_url'] = response.meta['referer_url']
         item['country'] = response.meta['country']

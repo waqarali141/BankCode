@@ -1,0 +1,14 @@
+setup.py
+AsposeCrawlers/__init__.py
+AsposeCrawlers/items.py
+AsposeCrawlers/middlewares.py
+AsposeCrawlers/pipelines.py
+AsposeCrawlers/settings.py
+AsposeCrawlers/spiders/__init__.py
+AsposeCrawlers/spiders/swift.py
+AsposeCrawlers/spiders/swiftcodes.py
+project.egg-info/PKG-INFO
+project.egg-info/SOURCES.txt
+project.egg-info/dependency_links.txt
+project.egg-info/entry_points.txt
+project.egg-info/top_level.txt

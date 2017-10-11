@@ -6,7 +6,7 @@ from AsposeCrawlers.items import SwiftCodeItem
 class SwiftCodes(Spider):
     name = 'swiftcodes'
     start_url = 'https://www.swiftcodes.info/'
-    custom_settings = {'DOWNLOAD_DELAY': 5,
+    custom_settings = {'DOWNLOAD_DELAY': 10,
                        'CONCURRENT_REQUESTS': 30,
                        'CONCURRENT_REQUESTS_PER_IP': 10}
 
@@ -21,7 +21,6 @@ class SwiftCodes(Spider):
 
             meta = dict()
             meta['initial'] = alphabet
-            meta['dont_merge_cookies'] = True
             yield Request(url=url, callback=self.parse_country_page,
                           meta=meta)
 
@@ -32,7 +31,6 @@ class SwiftCodes(Spider):
             url =  response.urljoin(country.xpath('@href').extract()[0])
 
             meta = copy.deepcopy(response.meta)
-            meta['dont_merge_cookies'] = True
             meta['country'] = country_name
             yield Request(url=url, callback=self.parse_banks,
                           meta=meta)
@@ -45,7 +43,6 @@ class SwiftCodes(Spider):
 
             meta = copy.deepcopy(response.meta)
             meta['referer_url'] = response.url
-            meta['dont_merge_cookies'] = True
             yield Request(url=link, meta=meta,
                           callback=self.parse_swift_code)
 
@@ -55,7 +52,6 @@ class SwiftCodes(Spider):
             url = response.urljoin(next_page[0])
 
             meta = copy.deepcopy(response.meta)
-            meta['dont_merge_cookies'] = True
             yield Request(url=url, meta=meta, callback=self.parse_banks)
 
     def parse_swift_code(self, response):
