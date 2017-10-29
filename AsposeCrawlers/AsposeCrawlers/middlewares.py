@@ -7,6 +7,8 @@
 
 from scrapy import signals
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
+from scrapy.downloadermiddlewares.httpproxy import HttpProxyMiddleware
+
 import random
 class AsposecrawlersSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -140,3 +142,11 @@ class RotateUserAgent(UserAgentMiddleware):
     def process_request(self, request, spider):
         ua = random.choice(self.user_agent_list)
         request.headers.setdefault(b'User-Agent', ua)
+
+
+class RotateProxy(HttpProxyMiddleware):
+    proxy_list = list()
+
+    def process_request(self, request, spider):
+        proxy = random.choice(self.proxy_list)
+        request.meta['proxy'] = proxy
