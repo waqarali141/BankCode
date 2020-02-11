@@ -9,7 +9,7 @@ click==6.7
 constantly==15.1.0
 cryptography==2.0.3
 cssselect==1.0.1
-Django==1.11.4
+Django==1.11.28
 django-bootstrap3==9.0.0
 djangorestframework==3.6.4
 docker-py==1.10.6
